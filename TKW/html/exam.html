@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#dc2626">
+  <meta name="description" content="Giao diện Thi Trực Tuyến - Hệ thống Luyện thi & Quản lý Đề thi DOLEARN Exam">
+  <title>Phòng Thi Trực Tuyến | DOLEARN Exam</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="stylesheet" href="../css/print.css" media="print">
+
+  <script src="../js/auth.js"></script>
+  <script>
+    (function () {
+      try {
+        var user = typeof getCurrentUser === "function" ? getCurrentUser() : (function () {
+          try {
+            var raw = localStorage.getItem("exampro_current_user");
+            return raw ? JSON.parse(raw) : null;
+          } catch (e) { return null; }
+        })();
+        if (user && (user.role === 'Giáo viên' || user.role === 'teacher' || (typeof isTeacherUser === "function" && isTeacherUser(user)))) {
+          window.location.replace("teacher-dashboard.html");
+        }
+      } catch (err) {}
+    })();
+  </script>
+</head>
+<body class="exam-page">
+
+  <header class="exam-header">
+    <div class="exam-header-inner">
+      
+      <div class="exam-meta-info">
+        <a href="dashboard.html" class="exam-brand-logo" title="Quay lại bảng điều khiển">
+          <i class="fas fa-graduation-cap"></i>
+          <span>EXAM</span>
+        </a>
+        <div class="exam-title-display">
+          <h2 id="examHeaderTitle">Đề thi Trực Tuyến</h2>
+          <span id="examHeaderCode">Mã đề: WEB-01 • Môn: Thiết kế Web</span>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <div class="user-display-name text-muted" style="font-size: var(--font-xs); text-align: right; display: none; sm:block;">
+          <div>Thí sinh:</div>
+          <strong id="candidateName" style="color: var(--primary);">Nguyễn Văn A</strong>
+        </div>
+
+        <div class="timer-container" title="Thời gian còn lại">
+          <i class="far fa-clock"></i>
+          <span class="timer-countdown" id="timerDisplay">15:00</span>
+        </div>
+
+        <button type="button" class="btn btn-primary btn-sm" id="btnSubmitExam">
+          <i class="fas fa-paper-plane"></i> Nộp Bài
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="exam-main-container">
+    
+    <section class="question-card">
+      <div class="question-header-row">
+        <div class="question-number-badge">
+          Câu hỏi <span id="currentQuestionNumber">1</span> / <span id="totalQuestionsNumber">5</span>
+        </div>
+        <button type="button" class="flag-question-btn" id="btnFlagQuestion" title="Đánh dấu để xem lại câu hỏi này sau">
+          <i class="far fa-flag"></i> Đánh dấu xem lại
+        </button>
+      </div>
+
+      <div class="question-content" id="questionContent">
+        Đang tải câu hỏi...
+      </div>
+
+      <div class="answers-list" id="answersList">
+        
+      </div>
+
+      <div class="question-nav-controls">
+        <button type="button" class="btn btn-secondary" id="btnPrevQuestion">
+          <i class="fas fa-arrow-left"></i> Câu trước
+        </button>
+        <div class="text-muted" style="font-size: var(--font-xs);">
+          <i class="fas fa-info-circle"></i> Câu trả lời được lưu tự động
+        </div>
+        <button type="button" class="btn btn-primary" id="btnNextQuestion">
+          Câu tiếp theo <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </section>
+
+    <aside class="palette-card">
+      <div class="palette-title">
+        <span><i class="fas fa-th-large text-accent"></i> Danh Sách Câu Hỏi</span>
+        <span class="badge badge-primary"><span id="answeredCount">0</span>/<span id="totalCount">5</span> Đã làm</span>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-labels">
+          <span>Tiến độ hoàn thành</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <div class="palette-legend">
+        <div class="legend-item">
+          <span class="legend-dot answered"></span>
+          <span>Đã làm</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot unanswered"></span>
+          <span>Chưa làm</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot flagged"></span>
+          <span>Xem lại</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot current"></span>
+          <span>Đang chọn</span>
+        </div>
+      </div>
+
+      <div class="palette-grid" id="paletteGrid">
+        
+      </div>
+
+      <button type="button" class="btn btn-primary btn-block" id="btnSubmitExamPalette">
+        <i class="fas fa-check-circle"></i> Hoàn Thành & Nộp Bài
+      </button>
+    </aside>
+  </main>
+
+  <div class="modal-overlay" id="submitConfirmModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3><i class="fas fa-question-circle text-accent"></i> Xác Nhận Nộp Bài Thi</h3>
+        <button type="button" class="modal-close-btn" data-close-modal aria-label="Đóng">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom: 1rem; font-size: 1rem; color: #1e293b;">Bạn có chắc chắn muốn kết thúc và nộp bài thi ngay bây giờ?</p>
+        
+        <div class="card" style="padding: 1.15rem; background-color: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; margin-bottom: 1rem;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.6rem;">
+            <span class="text-muted"><i class="fas fa-list-ol"></i> Tổng số câu hỏi:</span>
+            <strong id="modalTotalQ" style="font-size: 1.05rem;">5</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.6rem;">
+            <span class="text-success font-semibold"><i class="fas fa-check-circle"></i> Đã hoàn thành:</span>
+            <strong id="modalAnsweredQ" class="text-success" style="font-size: 1.05rem;">3</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span class="text-danger font-semibold"><i class="fas fa-exclamation-circle"></i> Chưa trả lời:</span>
+            <strong id="modalUnansweredQ" class="text-danger" style="font-size: 1.05rem;">2</strong>
+          </div>
+        </div>
+
+        <div id="unansweredWarning" style="color: #d97706; background: #fffbeb; border: 1.5px solid #fde68a; padding: 0.75rem 1rem; border-radius: 8px; font-size: var(--font-xs); font-weight: 700; display: none;">
+          <i class="fas fa-exclamation-triangle"></i> Bạn vẫn còn câu hỏi chưa hoàn thành. Bạn có muốn tiếp tục làm bài không?
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button type="button" class="btn btn-secondary" data-close-modal>
+          <i class="fas fa-pencil-alt"></i> Tiếp Tục Làm Bài
+        </button>
+        <button type="button" class="btn btn-primary" id="btnConfirmSubmit">
+          <i class="fas fa-paper-plane"></i> Đồng Ý Nộp Bài
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="resultModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3><i class="fas fa-award text-accent"></i> Kết Quả Bài Thi</h3>
+        <button type="button" class="modal-close-btn" data-close-modal aria-label="Đóng">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="result-score-box">
+          <div class="score-number" id="resultScore">0.0</div>
+          <div class="text-muted" style="font-weight: 700; font-size: var(--font-sm);">Thang điểm 10</div>
+          <div id="resultFeedback" style="margin-top: 0.5rem; font-weight: 800; font-size: 1.1rem; color: #16a34a;">Đã hoàn thành bài thi!</div>
+        </div>
+
+        <div class="score-details-grid">
+          <div class="score-detail-item">
+            <div class="value" id="resultCorrectCount">0/0</div>
+            <div class="label">Số câu đúng</div>
+          </div>
+          <div class="score-detail-item">
+            <div class="value" id="resultAccuracy">0%</div>
+            <div class="label">Độ chính xác</div>
+          </div>
+          <div class="score-detail-item">
+            <div class="value" id="resultTimeSpent">0m 0s</div>
+            <div class="label">Thời gian làm</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
+        <button type="button" class="btn btn-secondary" id="btnReviewAnswers">
+          <i class="fas fa-eye"></i> Xem Lại Đáp Án
+        </button>
+        <button type="button" class="btn btn-secondary" id="btnRetryExam" onclick="window.location.reload();">
+          <i class="fas fa-redo"></i> Thi Lại
+        </button>
+        <a href="dashboard.html" class="btn btn-primary">
+          <i class="fas fa-th-large"></i> Về Kho Đề Thi
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/utils.js"></script>
+  <script src="../js/exam.js"></script>
+</body>
+</html>
